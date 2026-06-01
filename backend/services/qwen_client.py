@@ -9,13 +9,15 @@ logger = logging.getLogger("cloudsense")
 
 class QwenClient:
     def __init__(self):
-        self.use_mocks = settings.USE_MOCKS
+        # Dynamically enable real Qwen Cloud API if a real API Key is configured
+        self.use_mocks = (settings.QWEN_API_KEY == "mock_key")
         if not self.use_mocks:
             try:
                 self.client = OpenAI(
                     api_key=settings.QWEN_API_KEY,
                     base_url=settings.QWEN_BASE_URL,
                 )
+                logger.info("Real Qwen Cloud DashScope reasoning client successfully initialized!")
             except Exception as e:
                 logger.error(f"Failed to initialize real Qwen client: {e}. Falling back to mocks.")
                 self.use_mocks = True

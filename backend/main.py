@@ -108,6 +108,13 @@ def get_fixes():
     return [f.model_dump(mode="json") for f in orchestrator.get_fixes()]
 
 
+@app.get("/api/connection-status")
+def get_connection_status():
+    """Retrieve current Alibaba Cloud and Qwen connection state/errors."""
+    from backend.services.cloud_monitor import cloud_monitor
+    return cloud_monitor.check_credentials_status()
+
+
 # ──────────────────────────────────────────────────────────
 # Configuration Settings Endpoints
 # ──────────────────────────────────────────────────────────
@@ -177,12 +184,14 @@ async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         # Send initial config setup and current anomalies/fixes immediately
+        from backend.services.cloud_monitor import cloud_monitor
         await websocket.send_json({
             "type": "welcome",
             "payload": {
                 "anomalies": [a.model_dump(mode="json") for a in orchestrator.get_anomalies()],
                 "fixes": [f.model_dump(mode="json") for f in orchestrator.get_fixes()],
-                "stats": orchestrator.get_dashboard_stats().model_dump(mode="json")
+                "stats": orchestrator.get_dashboard_stats().model_dump(mode="json"),
+                "connection_status": cloud_monitor.check_credentials_status()
             }
         })
         

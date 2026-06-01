@@ -51,12 +51,20 @@ export default function App() {
   });
   const [showConfigAlert, setShowConfigAlert] = useState(false);
   
+  const [connectionStatus, setConnectionStatus] = useState({
+    status: "demo",
+    message: "Demo Mode: Running with simulated resources. Configure live credentials in .env to connect.",
+    ram_user_details: null,
+    region: "us-east-1"
+  });
+
   const consoleEndRef = useRef(null);
   const ws = useRef(null);
 
   // Load state and settings on mount
   useEffect(() => {
     fetchSettings();
+    fetchConnectionStatus();
   }, []);
 
   // Initialize WebSocket connection
@@ -80,6 +88,9 @@ export default function App() {
         setAnomalies(data.payload.anomalies || []);
         setFixes(data.payload.fixes || []);
         setStats(data.payload.stats);
+        if (data.payload.connection_status) {
+          setConnectionStatus(data.payload.connection_status);
+        }
       } else {
         // Handle stream update messages
         addLog(data.type, data.message);
@@ -124,6 +135,16 @@ export default function App() {
     setLogs((prev) => [...prev, { timestamp: new Date().toISOString(), type, message }]);
   };
 
+  const fetchConnectionStatus = async () => {
+    try {
+      const res = await fetch("/api/connection-status");
+      const data = await res.json();
+      setConnectionStatus(data);
+    } catch (e) {
+      console.error("Failed to load connection status:", e);
+    }
+  };
+
   const fetchSettings = async () => {
     try {
       const res = await fetch("/api/settings");
@@ -165,6 +186,8 @@ export default function App() {
       const resFixes = await fetch("/api/fixes");
       const dataFixes = await resFixes.json();
       setFixes(dataFixes);
+
+      fetchConnectionStatus();
     } catch (e) {
       console.error("Failed to sync backend state:", e);
     }
@@ -251,8 +274,12 @@ export default function App() {
 
         <div className="sidebar-footer">
           <div className="status-badge-container">
-            <div className="pulse-dot" />
-            <span>Qwen Core Connected</span>
+            <div className={`pulse-dot ${connectionStatus.status}`} />
+            <span>
+              {connectionStatus.status === "connected" ? "Live Account Connected" :
+               connectionStatus.status === "forbidden_ram" ? "RAM Permission Denied" :
+               connectionStatus.status === "invalid_credentials" ? "Invalid Credentials" : "Demo Sandbox Mode"}
+            </span>
           </div>
         </div>
       </aside>
@@ -287,6 +314,40 @@ export default function App() {
                 )}
               </button>
             </header>
+
+            {/* Real-time Alibaba Cloud Connection Status Alert */}
+            {connectionStatus && (
+              <div className={`connection-status-banner ${connectionStatus.status}`}>
+                <div className="status-banner-content">
+                  <div className="status-banner-icon">
+                    {connectionStatus.status === "connected" && <CheckCircle size={20} style={{ color: "hsl(var(--emerald))" }} />}
+                    {connectionStatus.status === "forbidden_ram" && <AlertTriangle size={20} style={{ color: "hsl(var(--amber))" }} />}
+                    {connectionStatus.status === "invalid_credentials" && <AlertTriangle size={20} style={{ color: "hsl(var(--rose))" }} />}
+                    {connectionStatus.status === "demo" && <Settings size={20} style={{ color: "hsl(var(--text-muted))" }} />}
+                  </div>
+                  <div className="status-banner-text">
+                    <div className="status-banner-title">
+                      {connectionStatus.status === "connected" && `Connected to Alibaba Cloud (${connectionStatus.region})`}
+                      {connectionStatus.status === "forbidden_ram" && `RAM Permissions Required — Alibaba Cloud (${connectionStatus.region})`}
+                      {connectionStatus.status === "invalid_credentials" && `Alibaba Cloud Connection Failed`}
+                      {connectionStatus.status === "demo" && `Demo Sandbox Mode`}
+                    </div>
+                    <div className="status-banner-desc">
+                      {connectionStatus.message}
+                    </div>
+                    {connectionStatus.status === "forbidden_ram" && connectionStatus.ram_user_details && (
+                      <div className="ram-troubleshoot-box">
+                        <strong>Action Required:</strong> Log in to the <strong>Alibaba Cloud Console</strong>, navigate to <strong>RAM &gt; Users &gt; cloudsense-agent</strong>, and attach the following policies:
+                        <ul>
+                          <li><code className="code-policy">AliyunECSReadOnlyAccess</code> (Allows reading ECS configurations)</li>
+                          <li><code className="code-policy">AliyunCloudMonitorReadOnlyAccess</code> (Allows reading resource metrics)</li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Global KPI Stats Grid */}
             <section className="stats-grid">

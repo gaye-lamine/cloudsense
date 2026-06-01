@@ -611,3 +611,174 @@ body {
     transform: translateY(0);
   }
 }
+
+/* 
+============================================================
+  CloudSense live connection status styles
+============================================================
+*/
+
+.connection-status-banner {
+  background: hsl(var(--bg-card));
+  border: 1px solid hsl(var(--border-light));
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.connection-status-banner.connected {
+  border-color: hsl(var(--emerald) / 0.4);
+  background: linear-gradient(135deg, hsl(var(--bg-card)), hsl(var(--emerald) / 0.02));
+}
+
+.connection-status-banner.connected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: hsl(var(--emerald));
+}
+
+.connection-status-banner.forbidden_ram {
+  border-color: hsl(var(--amber) / 0.4);
+  background: linear-gradient(135deg, hsl(var(--bg-card)), hsl(var(--amber) / 0.02));
+}
+
+.connection-status-banner.forbidden_ram::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: hsl(var(--amber));
+}
+
+.connection-status-banner.invalid_credentials {
+  border-color: hsl(var(--rose) / 0.4);
+  background: linear-gradient(135deg, hsl(var(--bg-card)), hsl(var(--rose) / 0.02));
+}
+
+.connection-status-banner.invalid_credentials::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: hsl(var(--rose));
+}
+
+.connection-status-banner.demo {
+  border-color: hsl(var(--border-light));
+}
+
+.status-banner-content {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.status-banner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 2px;
+}
+
+.status-banner-text {
+  flex-grow: 1;
+}
+
+.status-banner-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.status-banner-desc {
+  font-size: 13.5px;
+  color: hsl(var(--text-muted));
+}
+
+.ram-troubleshoot-box {
+  margin-top: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid hsl(var(--border-light));
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.ram-troubleshoot-box strong {
+  color: white;
+}
+
+.ram-troubleshoot-box ul {
+  margin-top: 8px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.code-policy {
+  font-family: var(--font-mono);
+  background: hsl(var(--border-light));
+  color: hsl(var(--secondary));
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Sidebar status badge states */
+.pulse-dot.connected {
+  background-color: hsl(var(--emerald));
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse-emerald 1.6s infinite;
+}
+
+.pulse-dot.forbidden_ram {
+  background-color: hsl(var(--amber));
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+  animation: pulse-amber 1.6s infinite;
+}
+
+.pulse-dot.invalid_credentials {
+  background-color: hsl(var(--rose));
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  animation: pulse-rose 1.6s infinite;
+}
+
+.pulse-dot.demo {
+  background-color: #64748b;
+  box-shadow: none;
+  animation: none;
+}
+
+@keyframes pulse-emerald {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes pulse-amber {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+@keyframes pulse-rose {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
