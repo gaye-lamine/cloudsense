@@ -46,4 +46,4 @@ networks:
   traefik-network:
     external: true
     # Specify the name of your existing Traefik network on the VPS
-    name: ${TRAEFIK_NETWORK:-web}
+    name: ${TRAEFIK_NETWORK:-traefik-public}
