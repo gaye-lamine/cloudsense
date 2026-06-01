@@ -182,19 +182,19 @@ class CloudSenseOrchestrator:
 
             # 2. Process Detected Anomalies & Prepare Code Fixes
             for anom in detected:
-                # Deduplicate based on active instance anomalies to prevent DB duplicates
-                existing = db.query(AnomalyRecord).filter(
+                # Deduplicate to prevent duplicates if a fix is pending, deploying, or deployed
+                matching_anomalies = db.query(AnomalyRecord).filter(
                     AnomalyRecord.instance_id == anom.instance_id,
                     AnomalyRecord.metric_name == anom.metric_name
-                ).first()
+                ).all()
                 
-                if existing:
-                    # Let's skip adding if a pending fix for this anomaly is already registered
-                    associated_fix = db.query(ProposedFixRecord).filter(
-                        ProposedFixRecord.anomaly_id == existing.id,
-                        ProposedFixRecord.status == "pending"
+                if matching_anomalies:
+                    matching_ids = [m.id for m in matching_anomalies]
+                    active_fix = db.query(ProposedFixRecord).filter(
+                        ProposedFixRecord.anomaly_id.in_(matching_ids),
+                        ProposedFixRecord.status.in_(["pending", "deploying", "deployed"])
                     ).first()
-                    if associated_fix:
+                    if active_fix:
                         continue
 
                 # Save new anomaly record to DB
