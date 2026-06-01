@@ -85,13 +85,6 @@ class CloudMonitorService:
                 "region": "us-east-1",
             },
             {
-                "instance_id": "i-81m32f5",
-                "name": "ecs-prod-worker-01",
-                "type": "ECS",
-                "details": "ecs.g7.large ($69.12/month)",
-                "region": "us-east-1",
-            },
-            {
                 "instance_id": "rds-prod-db-1",
                 "name": "rds-mysql-master",
                 "type": "RDS",
