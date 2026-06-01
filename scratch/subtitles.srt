@@ -1,0 +1,23 @@
+1
+00:00:00,000 --> 00:00:15,000
+Hello, and welcome to CloudSense, the autonomous cost-optimization autopilot for Alibaba Cloud, designed for Track 4.
+
+2
+00:00:15,000 --> 00:00:35,000
+First, let's look at enterprise safety and transparency. CloudSense connects securely using RAM credentials. Our dashboard immediately checks the live credentials status. Here, you can see we are successfully connected to us-east-1. If permissions were missing, CloudSense would display a precise DevSecOps troubleshooting guide instead of failing silently.
+
+3
+00:00:35,000 --> 00:00:55,000
+Now, let's trigger an autonomous audit cycle. CloudSense queries CloudMonitor telemetry and leverages Qwen-Plus for deep reasoning. Notice the SRE-grade logs: before submitting any change, CloudSense spins up a DevSecOps sandbox to run 'terraform validate', cross-references the optimized tier with the live billing catalog to prevent LLM price hallucinations, and checks GitOps locks to prevent branch conflicts.
+
+4
+00:00:55,000 --> 00:01:15,000
+Qwen successfully detected three anomalies: an oversized ECS instance, an unattached high-cost storage disk, and a slow database query. CloudSense compiled the fix and created real, validated Pull Requests on GitHub.
+
+5
+00:01:15,000 --> 00:01:35,000
+Once the operator approves, the fix is deployed. But SRE safety doesn't stop here. If anything goes wrong, the operator has an emergency 'Rollback' button. Clicking it instantly triggers an automatic Git Revert pipeline, restoring the infrastructure to its safe baseline state in seconds.
+
+6
+00:01:35,000 --> 00:01:45,000
+CloudSense bridges the gap between autonomous AI capabilities and enterprise-grade DevSecOps security. Thank you!

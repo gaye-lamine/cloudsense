@@ -20,6 +20,18 @@ import {
   Settings
 } from "lucide-react";
 
+// Global fetch override to support external API endpoint in production
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+if (API_BASE_URL) {
+  const originalFetch = window.fetch;
+  window.fetch = (input, init) => {
+    if (typeof input === "string" && input.startsWith("/api/")) {
+      return originalFetch(`${API_BASE_URL}${input}`, init);
+    }
+    return originalFetch(input, init);
+  };
+}
+
 export default function App() {
   const [stats, setStats] = useState({
     total_anomalies_detected: 0,
@@ -71,7 +83,9 @@ export default function App() {
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const host = window.location.host;
-    const wsUrl = `${protocol}//${host}/ws`;
+    const wsUrl = API_BASE_URL
+      ? `${API_BASE_URL.replace("http://", "ws://").replace("https://", "wss://")}/ws`
+      : `${protocol}//${host}/ws`;
 
     console.log("Connecting to WebSocket:", wsUrl);
     ws.current = new WebSocket(wsUrl);

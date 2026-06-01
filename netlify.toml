@@ -1,0 +1,16 @@
+[build]
+  # Navigate to the frontend directory
+  base = "frontend"
+  # Clean build commands
+  command = "npm install && npm run build"
+  # Target the compiled distribution folder
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Redirect all paths to index.html for Single Page Application (SPA) routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

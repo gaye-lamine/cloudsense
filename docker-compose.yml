@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cloudsense-backend:latest
+    container_name: cloudsense-backend
+    restart: unless-stopped
+    volumes:
+      # Persistent SQLite database storage
+      - cloudsense-db-data:/app/data
+    environment:
+      - QWEN_API_KEY=${QWEN_API_KEY}
+      - QWEN_MODEL=${QWEN_MODEL:-qwen-plus}
+      - QWEN_BASE_URL=${QWEN_BASE_URL:-https://dashscope-intl.aliyuncs.com/compatible-mode/v1}
+      - ALIBABA_ACCESS_KEY_ID=${ALIBABA_ACCESS_KEY_ID}
+      - ALIBABA_ACCESS_KEY_SECRET=${ALIBABA_ACCESS_KEY_SECRET}
+      - ALIBABA_REGION=${ALIBABA_REGION:-us-east-1}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - GITHUB_REPO_OWNER=${GITHUB_REPO_OWNER}
+      - GITHUB_REPO_NAME=${GITHUB_REPO_NAME}
+      - APP_ENV=production
+      - APP_HOST=0.0.0.0
+      - APP_PORT=8000
+      - FRONTEND_URL=${FRONTEND_URL} # Your Netlify URL (e.g., https://cloudsense.netlify.app)
+      - DATABASE_URL=sqlite:////app/data/cloudsense.db # Persistent production path
+    networks:
+      # Connect to your existing Traefik network (often 'web' or 'traefik-public')
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      # REPLACE 'cloudsense-api.yourdomain.com' with your actual domain for the backend API
+      - "traefik.http.routers.cloudsense-backend.rule=Host(`${BACKEND_DOMAIN:-cloudsense-api.yourdomain.com}`)"
+      - "traefik.http.routers.cloudsense-backend.entrypoints=websecure"
+      - "traefik.http.routers.cloudsense-backend.tls=true"
+      # REPLACE 'myresolver' with your Traefik Let's Encrypt certificate resolver name
+      - "traefik.http.routers.cloudsense-backend.tls.certresolver=${CERT_RESOLVER:-myresolver}"
+      - "traefik.http.services.cloudsense-backend.loadbalancer.server.port=8000"
+
+volumes:
+  cloudsense-db-data:
+
+networks:
+  traefik-network:
+    external: true
+    # Specify the name of your existing Traefik network on the VPS
+    name: ${TRAEFIK_NETWORK:-web}

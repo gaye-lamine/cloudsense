@@ -71,10 +71,19 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for local Vite dev development
+# Enable CORS for local Vite development and production frontend domain
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+if settings.FRONTEND_URL:
+    # Clean trailing slash if present
+    clean_url = settings.FRONTEND_URL.rstrip("/")
+    origins.append(clean_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
