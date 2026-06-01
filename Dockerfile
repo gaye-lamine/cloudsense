@@ -19,8 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./backend/
 COPY infra/ ./infra/
 
-# Copy frontend build (pre-built)
-COPY frontend/dist/ ./frontend/dist/
+
 
 # Environment
 ENV APP_ENV=production
