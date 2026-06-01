@@ -47,6 +47,11 @@ git add .
 git commit -m "Deploy: $(date '+%Y-%m-%d %H:%M:%S')" || echo "ℹ️ Aucune modification à commiter"
 git push origin "$CURRENT_BRANCH"
 
+# S'assurer que le répertoire de destination existe et copier le fichier .env local
+echo "📤 Copie du fichier .env local vers le serveur..."
+sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" "mkdir -p $PROJECT_PATH"
+sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no .env "$SERVER_USER@$SERVER_HOST:$PROJECT_PATH/.env"
+
 # Connexion au serveur et déploiement via Docker Compose
 echo "🔗 Connexion au serveur via sshpass et déploiement via Docker Compose..."
 sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" << EOF
