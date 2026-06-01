@@ -1,22 +1,15 @@
 #!/bin/bash
 
-# Script de déploiement pour CloudSense API sur VPS
+# Script de déploiement pour CloudSense API sur VPS (root@72.60.213.116)
 # Usage: ./deploy.sh [staging|production]
 
 ENV=${1:-production}
-SSH_KEY="/Users/mac/Desktop/deploy/dev-ssh-key.pem"
-SERVER_USER="ubuntu"
-SERVER_HOST="ec2-13-39-19-215.eu-west-3.compute.amazonaws.com"
+SERVER_USER="root"
+SERVER_HOST="72.60.213.116"
 PROJECT_PATH="/var/www/html/apps/cloudsense"
 
 echo "🚀 Déploiement de CloudSense API - Environnement: $ENV"
-echo "🌐 Serveur: $SERVER_HOST"
-
-# Vérifier que la clé SSH existe
-if [ ! -f "$SSH_KEY" ]; then
-    echo "❌ Erreur: Clé SSH non trouvée à $SSH_KEY"
-    exit 1
-fi
+echo "🌐 Serveur: $SERVER_USER@$SERVER_HOST"
 
 # Branche actuelle
 CURRENT_BRANCH=$(git branch --show-current)
@@ -32,6 +25,22 @@ if [ "$CURRENT_BRANCH" != "main" ]; then
     fi
 fi
 
+# Charger les variables secrètes locales pour le déploiement
+if [ -f .env ]; then
+    # Helper pour lire .env en bash
+    get_env_var() {
+        local var_name=$1
+        local value=$(grep -E "^${var_name}=" .env | cut -d'=' -f2- | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
+        echo "$value"
+    }
+    VPS_PASSWORD=$(get_env_var "VPS_PASSWORD")
+fi
+
+if [ -z "$VPS_PASSWORD" ]; then
+    echo "❌ Erreur: VPS_PASSWORD n'est pas défini dans le fichier .env local."
+    exit 1
+fi
+
 # Synchronisation locale
 echo "🔄 Synchronisation locale et push vers le repository..."
 git add .
@@ -39,8 +48,8 @@ git commit -m "Deploy: $(date '+%Y-%m-%d %H:%M:%S')" || echo "ℹ️ Aucune modi
 git push origin "$CURRENT_BRANCH"
 
 # Connexion au serveur et déploiement via Docker Compose
-echo "🔗 Connexion au serveur et déploiement via Docker Compose..."
-ssh -i "$SSH_KEY" "$SERVER_USER@$SERVER_HOST" << EOF
+echo "🔗 Connexion au serveur via sshpass et déploiement via Docker Compose..."
+sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" << EOF
     set -e
     
     echo "=== 🏗️ Mise à jour sur le serveur ==="
