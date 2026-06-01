@@ -92,7 +92,7 @@ class QwenClient:
                 "remediation_action": "Downsize instance type from 'ecs.g7.2xlarge' (8 vCPUs, 32GB RAM) to 'ecs.g7.large' (2 vCPUs, 8GB RAM).",
                 "estimated_monthly_savings": 207.36
             }
-        elif "slow_queries" in metrics_data or "pg_stat_activity" in metrics_data:
+        elif "slow_queries" in metrics_data or "rds-prod-db-1" in metrics_data:
             return {
                 "instance_id": "rds-prod-db-1",
                 "service_type": "RDS",
@@ -104,6 +104,19 @@ class QwenClient:
                 "impact_description": "Excessive CPU burn increases RDS resource class requirements, adding $150.00/month in scaling overhead, while degrading frontend customer payment experiences.",
                 "remediation_action": "Deploy an index on 'billing_transactions(user_id, status)' and update the transaction querying query pattern in the application repo.",
                 "estimated_monthly_savings": 150.00
+            }
+        elif "disk-prod" in metrics_data or "d-55c32f8" in metrics_data:
+            return {
+                "instance_id": "d-55c32f8",
+                "service_type": "EBS",
+                "metric_name": "AttachmentState",
+                "severity": "warning",
+                "current_value": 0.0,
+                "baseline_value": 1.0,
+                "root_cause": "The high-performance cloud storage volume 'disk-prod-backup-static' has remained in the 'Available' (unattached) state for over 30 consecutive days, indicating it is an orphan volume left over from a deprecated ECS migration.",
+                "impact_description": "Accumulating unnecessary billing overhead of $120.00/month for active block allocation without any actual compute mapping or data reads/writes.",
+                "remediation_action": "Remove the unattached storage volume 'disk-prod-backup-static' from the Terraform configuration to decommission the orphan resource.",
+                "estimated_monthly_savings": 120.00
             }
         else:
             return {

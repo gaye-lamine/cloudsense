@@ -9,6 +9,7 @@ import {
   Terminal,
   Cpu,
   Database,
+  HardDrive,
   ArrowRight,
   Sparkles,
   GitPullRequest,
@@ -387,7 +388,13 @@ export default function App() {
                         <div key={anom.id} className="anomaly-item">
                           <div className="anomaly-header">
                             <span className="instance-badge">
-                              {anom.service_type === "ECS" ? <Cpu size={14} style={{ marginRight: "4px" }} /> : <Database size={14} style={{ marginRight: "4px" }} />}
+                              {anom.service_type === "ECS" ? (
+                                <Cpu size={14} style={{ marginRight: "4px" }} />
+                              ) : anom.service_type === "EBS" ? (
+                                <HardDrive size={14} style={{ marginRight: "4px" }} />
+                              ) : (
+                                <Database size={14} style={{ marginRight: "4px" }} />
+                              )}
                               {anom.instance_id}
                             </span>
                             <span className={`severity-badge ${anom.severity}`}>

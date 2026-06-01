@@ -27,8 +27,14 @@ class CloudSenseAnalyzer:
             instance_id = svc["instance_id"]
             svc_name = svc["name"]
             
-            # Fetch CPU metric
-            metric_name = "CPUUtilization" if svc["type"] == "ECS" else "SlowQueryCount"
+            # Fetch appropriate metric based on service type
+            if svc["type"] == "ECS":
+                metric_name = "CPUUtilization"
+            elif svc["type"] == "RDS":
+                metric_name = "SlowQueryCount"
+            else:
+                metric_name = "AttachmentState"
+
             logger.info(f"Fetching metrics for {svc_name} ({instance_id}) - {metric_name}")
             
             metrics = self.monitor.fetch_metrics(instance_id, metric_name)

@@ -15,7 +15,7 @@ class CloudMonitorService:
 
     def get_monitored_services(self) -> List[dict]:
         """
-        Returns a list of monitored Alibaba Cloud resources (ECS and RDS databases).
+        Returns a list of monitored Alibaba Cloud resources (ECS, RDS, and EBS storage).
         """
         return [
             {
@@ -37,6 +37,13 @@ class CloudMonitorService:
                 "name": "rds-mysql-master",
                 "type": "RDS",
                 "details": "rds.mysql.s2.large ($180.00/month)",
+                "region": "us-east-1",
+            },
+            {
+                "instance_id": "d-55c32f8",
+                "name": "disk-prod-backup-static",
+                "type": "EBS",
+                "details": "alicloud_disk.gp3 (1024GB, $120.00/month)",
                 "region": "us-east-1",
             },
             {
@@ -69,7 +76,12 @@ class CloudMonitorService:
             client = CmsClient(config)
 
             # Map inputs to standard Alibaba Cloud namespaces
-            namespace = "acs_ecs_dashboard" if "i-" in instance_id else "acs_rds"
+            if "d-" in instance_id:
+                namespace = "acs_ebs"
+            elif "i-" in instance_id:
+                namespace = "acs_ecs_dashboard"
+            else:
+                namespace = "acs_rds"
             
             now = datetime.utcnow()
             request = cms_models.DescribeMetricListRequest(
@@ -107,6 +119,10 @@ class CloudMonitorService:
             unit = "Count"
             base_val = 135.0  # High count of slow queries
             noise = 15.0
+        elif instance_id == "d-55c32f8":  # Unattached storage volume
+            unit = "AttachmentState"
+            base_val = 0.0  # 0.0 means unattached / Available state
+            noise = 0.0
         elif instance_id == "i-72d8fe1":  # Normal staging box
             unit = "%"
             base_val = 15.0
