@@ -8,6 +8,12 @@ services:
     image: cloudsense-backend:latest
     container_name: cloudsense-backend
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cloudsense.entrypoints=websecure"
+      - "traefik.http.routers.cloudsense.rule=Host(`cloudsense.backnd-api.cloud`)"
+      - "traefik.http.routers.cloudsense.tls.certresolver=letsencrypt"
+      - "traefik.http.services.cloudsense.loadbalancer.server.port=8000"
     ports:
       - "8082:8000"
     volumes:
