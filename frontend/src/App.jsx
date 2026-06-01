@@ -481,17 +481,38 @@ export default function App() {
                               </span>
 
                               {associatedFix && (
-                                <span style={{
-                                  fontSize: "12px",
-                                  fontWeight: 600,
-                                  textTransform: "uppercase",
-                                  padding: "4px 8px",
-                                  borderRadius: "4px",
-                                  color: associatedFix.status === "deployed" ? "hsl(var(--emerald))" :
-                                         associatedFix.status === "rejected" ? "hsl(var(--rose))" : "hsl(var(--amber))"
-                                }}>
-                                  Status: {associatedFix.status}
-                                </span>
+                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                  <span style={{
+                                    fontSize: "12px",
+                                    fontWeight: 600,
+                                    textTransform: "uppercase",
+                                    padding: "4px 8px",
+                                    borderRadius: "4px",
+                                    color: associatedFix.status === "deployed" ? "hsl(var(--emerald))" :
+                                           associatedFix.status === "rolled_back" ? "hsl(var(--rose))" :
+                                           associatedFix.status === "rejected" ? "hsl(var(--rose))" : "hsl(var(--amber))"
+                                  }}>
+                                    Status: {associatedFix.status}
+                                  </span>
+                                  {associatedFix.status === "deployed" && (
+                                    <button
+                                      onClick={() => handleHITLAction(associatedFix.id, "rollback")}
+                                      style={{
+                                        background: "hsl(var(--rose) / 0.15)",
+                                        color: "hsl(var(--rose))",
+                                        border: "1px solid hsl(var(--rose) / 0.3)",
+                                        padding: "3px 8px",
+                                        borderRadius: "4px",
+                                        fontSize: "11px",
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                        transition: "all 0.2s"
+                                      }}
+                                    >
+                                      Rollback
+                                    </button>
+                                  )}
+                                </div>
                               )}
                             </div>
                           </div>
