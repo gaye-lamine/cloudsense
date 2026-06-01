@@ -1,0 +1,35 @@
+# CloudSense — Core
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-dotenv==1.1.0
+pydantic==2.10.4
+pydantic-settings==2.7.1
+
+# Qwen Cloud via OpenAI SDK
+openai==1.82.0
+
+# Alibaba Cloud SDK
+alibabacloud-cms20190101>=2.0.0
+alibabacloud-ecs20140526>=3.0.0
+alibabacloud-tea-openapi>=0.3.0
+
+# MCP Server
+mcp==1.9.2
+
+# WebSocket support (included in uvicorn[standard])
+websockets==14.2
+
+# Database (lightweight for demo)
+sqlalchemy==2.0.36
+aiosqlite==0.21.0
+
+# GitHub API
+PyGithub==2.6.0
+
+# Data & utilities
+httpx==0.28.1
+python-dateutil==2.9.0
+
+# Logging
+structlog==24.4.0
+rich==13.9.4
