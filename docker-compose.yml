@@ -31,8 +31,8 @@ services:
       - traefik-network
     labels:
       - "traefik.enable=true"
-      # REPLACE 'cloudsense-api.yourdomain.com' with your actual domain for the backend API
-      - "traefik.http.routers.cloudsense-backend.rule=Host(`${BACKEND_DOMAIN:-cloudsense-api.yourdomain.com}`)"
+      # REPLACE 'cloudsense.backnd-api.cloud' with your actual domain for the backend API
+      - "traefik.http.routers.cloudsense-backend.rule=Host(`${BACKEND_DOMAIN:-cloudsense.backnd-api.cloud}`)"
       - "traefik.http.routers.cloudsense-backend.entrypoints=websecure"
       - "traefik.http.routers.cloudsense-backend.tls=true"
       # REPLACE 'myresolver' with your Traefik Let's Encrypt certificate resolver name
